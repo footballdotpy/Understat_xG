@@ -17,7 +17,7 @@ base_url = f'https://understat.com/league/EPL/2022'
 
 option = Options()
 option.headless = False
-driver = webdriver.Chrome("C:/Users/paulc/Documents/Football Data project/DroppingOddsScraper/chromedriver.exe",options=option)
+driver = webdriver.Chrome("##############",options=option)
 driver.get(base_url)
 
 
