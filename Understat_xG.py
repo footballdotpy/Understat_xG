@@ -7,6 +7,10 @@ import pandas as pd
 import warnings
 from bs4 import BeautifulSoup
 import requests
+import time
+
+# Start the timer
+start_time = time.time()
 
 warnings.filterwarnings('ignore')
 
@@ -23,11 +27,6 @@ driver.get(base_url)
 
 # Loop until the button is disabled
 while True:
-    # Check if the button is disabled
-    button_disabled = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[2]/div/div/button[1]").get_attribute(
-        "disabled")
-    if button_disabled:
-        break
 
     # Fetch the current page URLs
     elements = driver.find_elements(By.CSS_SELECTOR, 'a.match-info')
@@ -44,6 +43,18 @@ while True:
     # Click the button to navigate to the next page
     next_button = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[2]/div/div/button[1]")
     next_button.click()
+
+    # Check if the button is disabled
+    button_disabled = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[2]/div/div/button[1]").get_attribute(
+        "disabled")
+    if button_disabled:
+         # Fetch the current page URLs
+        elements = driver.find_elements(By.CSS_SELECTOR, 'a.match-info')
+        page_urls = [element.get_attribute('href') for element in elements]
+
+    # Store the URLs in the main list
+        urls.extend(page_urls)
+        break
 
 driver.quit()
 
@@ -121,4 +132,12 @@ aggregated_df['away_sp_xG'] = aggregated_df['away_directfk_xG'] + aggregated_df[
 
 aggregated_df.to_csv('epl2223.csv',index=False)
 
+# End the timer
+end_time = time.time()
+
+# Calculate the total time taken
+total_time = end_time - start_time
+
+# Print the total time taken
+print("Total time taken: {:.2f} seconds".format(total_time))
 print("Process completed and csv exported!.")
