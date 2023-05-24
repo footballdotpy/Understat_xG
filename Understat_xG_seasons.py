@@ -17,54 +17,48 @@ warnings.filterwarnings('ignore')
 # create an empty list to store urls.
 urls = []
 
-base_url = f'https://understat.com/league/EPL/2022'
+seasons = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021]
 
-option = Options()
-option.headless = False
-driver = webdriver.Chrome("##############",options=option)
-driver.get(base_url)
+for season in seasons:
+    base_url = f'https://understat.com/league/EPL/{season}'
 
+    option = Options()
+    option.headless = True
+    driver = webdriver.Chrome("##############", options=option)
+    driver.get(base_url)
 
-# Loop until the button is disabled
-while True:
-
-    # Fetch the current page URLs
-    elements = driver.find_elements(By.CSS_SELECTOR, 'a.match-info')
-    page_urls = [element.get_attribute('href') for element in elements]
-
-    # Store the URLs in the main list
-    urls.extend(page_urls)
-
-    # Scroll down or perform any necessary actions to load the next page
-
-    # Wait for a short duration to allow the next page to load
-    sleep(3)
-
-    # Click the button to navigate to the next page
-    next_button = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[2]/div/div/button[1]")
-    next_button.click()
-
-    # Check if the button is disabled
-    button_disabled = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[2]/div/div/button[1]").get_attribute(
-        "disabled")
-    if button_disabled:
-         # Fetch the current page URLs
+    # Loop until the button is disabled
+    while True:
+        # Fetch the current page URLs
         elements = driver.find_elements(By.CSS_SELECTOR, 'a.match-info')
         page_urls = [element.get_attribute('href') for element in elements]
 
-    # Store the URLs in the main list
+        # Store the URLs in the main list
         urls.extend(page_urls)
-        break
 
-driver.quit()
+        # Scroll down or perform any necessary actions to load the next page
 
+        # Wait for a short duration to allow the next page to load
+        sleep(3)
 
-print("Urls extracted,Game scraping and cleaning commencing.")
+        # Click the button to navigate to the next page
+        next_button = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[2]/div/div/button[1]")
+        next_button.click()
 
+        # Check if the button is disabled
+        button_disabled = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[2]/div/div/button[1]").get_attribute(
+            "disabled")
+        if button_disabled:
+            break
+
+    driver.quit()
+
+print("Urls extracted, Game scraping and cleaning commencing.")
+unique_urls = list(set(urls))
 # create list to store match data.
 match_data = []
 
-for match in urls:
+for match in unique_urls:
     base_urls = match
 #Use requests tuo get the webpage and BeautifulSoup to parse the page
     res = requests.get(base_urls)
@@ -130,7 +124,7 @@ aggregated_df['home_sp_xG'] = aggregated_df['home_directfk_xG'] + aggregated_df[
 # Create 'away_sp_xG' column by summing up the individual non pen and openplay columns
 aggregated_df['away_sp_xG'] = aggregated_df['away_directfk_xG'] + aggregated_df['away_corner_xG'] + aggregated_df['away_setpiece_xG']
 
-aggregated_df.to_csv('epl2223.csv',index=False)
+aggregated_df.to_csv('epl.csv',index=False)
 
 # End the timer
 end_time = time.time()
