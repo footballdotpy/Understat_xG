@@ -1,5 +1,4 @@
 import json
-
 import numpy as np
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
